@@ -3,6 +3,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {
+      scale: {
+        "minus1": "-1",
+      },
       colors: {
         primary: "#082032",
         primary_light: "#334756",
@@ -14,7 +17,7 @@ module.exports = {
         "1/2": "50%",
       },
       height: {
-        screen: "90vh",
+        screen: "91vh",
       },
     },
   },

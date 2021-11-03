@@ -3,11 +3,10 @@ import React from "react";
 import { Redirect, Route } from "react-router-dom";
 
 function PrivateRoute(props) {
-  const { path, component } = props;
-  const { isAuthenticated } = useAuth0();
+  const { path, component, signedIn } = props;
   return (
     <>
-      {isAuthenticated === true ? (
+      {signedIn.userStatus ? (
         <Route exact path={path} component={component}></Route>
       ) : (
         <Redirect to="/" exact></Redirect>

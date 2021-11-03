@@ -1,43 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./components/pages/Home";
-import Navbar from "./components/pages/Navbar";
-import Dashboard from "./components/pages/Dashboard";
-import PrivateRoute from "./components/Routes/PrivateRoute";
+import Home from "./pages/Home";
+import Navbar from "./pages/Navbar";
+import Dashboard from "./pages/Dashboard";
+import SignIn from "./pages/SignIn";
+import PrivateRoute from "./Routes/PrivateRoute";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import toast, { Toaster } from "react-hot-toast";
+import fire from "./components/firebase";
 
 const customTheme = createTheme({
   palette: {
-    primary: {
-      main: "#082032",
-      light: "#334756",
-    },
+    color1: "#082032",
+    green: "#4E9F3D",
+    gray: "#EEEEEE",
   },
   typography: {
     fontFamily: "Poppins, sans-serif",
-    h4: {
-      fontWeight: "bolder",
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#334756",
-        },
-      },
-    },
   },
 });
 
 function App() {
+  const [signedIn, hasSignedIn] = useState({
+    userStatus: false,
+    userid: "",
+  });
+
+  console.log(signedIn);
+
   return (
     <ThemeProvider theme={customTheme}>
+      <Toaster></Toaster>
       <Router>
-        <Navbar />
+        <Navbar signedIn={signedIn} hasSignedIn={hasSignedIn} />
         <Switch>
           <Route exact path="/" component={Home} />
-          <PrivateRoute path="/dashboard" component={Dashboard}></PrivateRoute>
+          <Route
+            exact
+            path="/sign-in"
+            component={() => (
+              <SignIn signedIn={signedIn} hasSignedIn={hasSignedIn} />
+            )}
+          />
+          <PrivateRoute
+            path="/dashboard"
+            component={() => <Dashboard userid={signedIn.userid} />}
+            signedIn={signedIn}
+          ></PrivateRoute>
         </Switch>
       </Router>
     </ThemeProvider>

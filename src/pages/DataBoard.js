@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Icon,
-  Divider,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography, Icon } from "@mui/material";
 import { MonetizationOn, Money, AccountBalance } from "@mui/icons-material";
 import CountUp from "react-countup";
 
