@@ -8,11 +8,11 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  Money,
   TrackChanges,
   GraphicEq,
   AttachMoney,
   Notes,
+  LibraryBooks,
 } from "@mui/icons-material";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
@@ -20,21 +20,34 @@ import DataBoard from "./DataBoard";
 import DataGraph from "./DataGraph";
 import AddBudget from "./AddBudget";
 import AddNotes from "./Notes";
+import DataEntry from "./DataEntry";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import axios from "axios";
-import toast from "react-hot-toast";
 
 const Dashboard = ({ userid }) => {
   const [userData, setUserData] = useState({});
+  const [budgetNames, setBudgetNames] = useState([]);
+
+  //fetch user details
   useEffect(() => {
     const fetchUser = async () => {
-      await axios.get(`/dashboard/${userid}`).then((user) => {
+      await axios.get(`/dashboard/fetchUser/${userid}`).then((user) => {
         setUserData(user.data[0]);
       });
     };
+
     fetchUser();
+  }, [userid]);
+
+  //fetch budgetNames entered so far
+  useEffect(() => {
+    fetchBudgetNames();
   }, []);
-  console.log(userid);
+
+  const fetchBudgetNames = async () => {
+    var fetchedArray = await axios.get(`/dashboard/fetchBudget/${userid}`);
+    setBudgetNames(fetchedArray.data);
+  };
 
   return (
     <Router>
@@ -72,6 +85,16 @@ const Dashboard = ({ userid }) => {
                           <AttachMoney></AttachMoney>
                         </ListItemIcon>
                         <ListItemText>Add Budget</ListItemText>
+                      </ListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem>
+                    <Link to="/dashboard/DataEntry">
+                      <ListItemButton>
+                        <ListItemIcon>
+                          <LibraryBooks></LibraryBooks>
+                        </ListItemIcon>
+                        <ListItemText>Data Entry</ListItemText>
                       </ListItemButton>
                     </Link>
                   </ListItem>
@@ -122,12 +145,34 @@ const Dashboard = ({ userid }) => {
                 <Route
                   exact
                   path="/dashboard/AddBudget"
-                  component={() => <AddBudget userData={userData} />}
+                  component={() => (
+                    <AddBudget
+                      userData={userData}
+                      fetchBudgetNames={fetchBudgetNames}
+                    />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/dashboard/DataEntry"
+                  component={() => (
+                    <DataEntry
+                      userData={userData}
+                      budgetNames={budgetNames}
+                      setBudgetNames={setBudgetNames}
+                    />
+                  )}
                 />
                 <Route
                   exact
                   path="/dashboard/DataBoard"
-                  component={DataBoard}
+                  component={() => (
+                    <DataBoard
+                    // userData={userData}
+                    // budgetNames={budgetNames}
+                    // setBudgetNames={setBudgetNames}
+                    />
+                  )}
                 />
                 <Route
                   exact

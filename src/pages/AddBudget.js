@@ -3,24 +3,29 @@ import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const AddBudget = ({ userData }) => {
+const AddBudget = ({ userData, fetchBudgetNames }) => {
   const [newBudget, setBudget] = useState({
     date: "",
     fundAlloted: 0,
     description: "",
   });
 
-  console.log(newBudget, userData.email);
-
   const createBudget = async () => {
-    toast.promise(
-      axios.post(`/dashboard/addBudget`, { email: userData.email, newBudget }),
-      {
-        loading: "Creating Budget...",
-        success: <b>Budget Created</b>,
-        error: <b>Could not create.</b>,
-      }
-    );
+    toast
+      .promise(
+        axios.post(`/dashboard/addBudget`, {
+          email: userData.email,
+          newBudget,
+        }),
+        {
+          loading: "Creating Budget...",
+          success: <b>Budget Created</b>,
+          error: <b>Could not create.</b>,
+        }
+      )
+      .then(() => {
+        fetchBudgetNames();
+      });
   };
 
   return (
@@ -38,7 +43,7 @@ const AddBudget = ({ userData }) => {
       />
       <TextField
         id="outlined-basic"
-        label="Amount Allotted"
+        label="Fund Allotted"
         variant="outlined"
         size="small"
         margin="normal"
@@ -73,7 +78,7 @@ const AddBudget = ({ userData }) => {
           color="success"
           onClick={createBudget}
         >
-          Add
+          Create
         </Button>
         <Button
           variant="contained"
