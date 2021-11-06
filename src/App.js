@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./pages/Navbar";
@@ -7,8 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import SignIn from "./pages/SignIn";
 import PrivateRoute from "./Routes/PrivateRoute";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import toast, { Toaster } from "react-hot-toast";
-import fire from "./components/firebase";
+import { Toaster } from "react-hot-toast";
 
 const customTheme = createTheme({
   palette: {
@@ -26,8 +24,6 @@ function App() {
     userStatus: false,
     userid: "",
   });
-
-  console.log(signedIn);
 
   return (
     <ThemeProvider theme={customTheme}>
