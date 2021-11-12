@@ -39,7 +39,6 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
     type: "",
     picture: "",
   });
-  console.log(user);
 
   var image;
 
