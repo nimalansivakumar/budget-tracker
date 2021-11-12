@@ -23,6 +23,8 @@ import AddNotes from "./Notes";
 import DataEntry from "./DataEntry";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import axios from "axios";
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables)
 
 const Dashboard = ({ userid }) => {
   const [userData, setUserData] = useState({});
@@ -167,11 +169,7 @@ const Dashboard = ({ userid }) => {
                   exact
                   path="/dashboard/DataBoard"
                   component={() => (
-                    <DataBoard
-                    // userData={userData}
-                    // budgetNames={budgetNames}
-                    // setBudgetNames={setBudgetNames}
-                    />
+                    <DataBoard userData={userData} budgetNames={budgetNames} />
                   )}
                 />
                 <Route
