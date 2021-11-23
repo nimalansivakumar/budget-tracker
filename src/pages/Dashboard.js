@@ -23,32 +23,21 @@ import AddNotes from "./Notes";
 import DataEntry from "./DataEntry";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import axios from "axios";
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables)
 
 const Dashboard = ({ userid }) => {
   const [userData, setUserData] = useState({});
   const [budgetNames, setBudgetNames] = useState([]);
 
-  //fetch user details
+  //fetch user details and budgetNames
   useEffect(() => {
-    const fetchUser = async () => {
-      await axios.get(`/dashboard/fetchUser/${userid}`).then((user) => {
-        setUserData(user.data[0]);
-      });
-    };
-
     fetchUser();
-  }, [userid]);
-
-  //fetch budgetNames entered so far
-  useEffect(() => {
-    fetchBudgetNames();
   }, []);
 
-  const fetchBudgetNames = async () => {
-    var fetchedArray = await axios.get(`/dashboard/fetchBudget/${userid}`);
-    setBudgetNames(fetchedArray.data);
+  const fetchUser = async () => {
+    await axios.get(`/dashboard/fetchUser/${userid}`).then((res) => {
+      setUserData(res.data.userData[0]);
+      setBudgetNames(res.data.budgetList);
+    });
   };
 
   return (
@@ -148,10 +137,7 @@ const Dashboard = ({ userid }) => {
                   exact
                   path="/dashboard/AddBudget"
                   component={() => (
-                    <AddBudget
-                      userData={userData}
-                      fetchBudgetNames={fetchBudgetNames}
-                    />
+                    <AddBudget userData={userData} fetchUser={fetchUser} />
                   )}
                 />
                 <Route
@@ -175,9 +161,13 @@ const Dashboard = ({ userid }) => {
                 <Route
                   exact
                   path="/dashboard/DataGraph"
-                  component={DataGraph}
+                  component={() => <DataGraph />}
                 />
-                <Route exact path="/dashboard/Notes" component={AddNotes} />
+                <Route
+                  exact
+                  path="/dashboard/Notes"
+                  component={() => <AddNotes userData={userData} />}
+                />
               </Switch>
             </Box>
           </Box>

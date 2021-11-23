@@ -101,6 +101,7 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
       }
     );
   };
+  
   fire.auth().onAuthStateChanged((currentUser) => {
     if (currentUser) {
       hasSignedIn({
@@ -190,9 +191,7 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
               </Box>
               <Typography variant="h6" component="h6" sx={{ fontSize: "15px" }}>
                 Don't have an Account?
-                <a href="..." onClick={() => setHasAccount(false)}>
-                  Sign Up
-                </a>
+                <p onClick={() => setHasAccount(false)}>Sign Up</p>
               </Typography>
             </Box>
           ) : (
@@ -312,9 +311,7 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
               </Box>
               <Typography variant="h6" component="h6" sx={{ fontSize: "15px" }}>
                 Have an Account?
-                <a href="..." onClick={() => setHasAccount(true)}>
-                  Log In
-                </a>
+                <p onClick={() => setHasAccount(true)}>Log In</p>
               </Typography>
             </Box>
           )}

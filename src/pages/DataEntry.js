@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 
 const DataEntry = ({ userData, budgetNames }) => {
   const [expense, setExpense] = useState({
-    budgetName: "",
+    budgetChose: "",
     date: "",
     amount: 0,
     spentOn: "",
@@ -56,7 +56,7 @@ const DataEntry = ({ userData, budgetNames }) => {
             label="Choose Budget"
             defaultValue=""
             onChange={(e) => {
-              setExpense({ ...expense, budgetName: e.target.value });
+              setExpense({ ...expense, budgetChose: e.target.value });
             }}
           >
             {budgetNames.map((name, key) => (

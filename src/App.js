@@ -8,6 +8,8 @@ import PrivateRoute from "./Routes/PrivateRoute";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Toaster } from "react-hot-toast";
 
+
+
 const customTheme = createTheme({
   palette: {
     color1: "#082032",

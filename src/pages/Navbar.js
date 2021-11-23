@@ -19,7 +19,7 @@ const Navbar = ({ signedIn, hasSignedIn }) => {
           });
         }),
       {
-        loading: "Loggind Out...",
+        loading: "Logging Out...",
         success: <b>Successfully Logged Out!</b>,
         error: <b>Could not Log Out.</b>,
       }

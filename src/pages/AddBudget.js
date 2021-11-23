@@ -3,18 +3,18 @@ import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const AddBudget = ({ userData, fetchBudgetNames }) => {
+const AddBudget = ({ userData, fetchUser }) => {
   const [newBudget, setBudget] = useState({
     date: "",
     fundAlloted: 0,
-    description: "",
+    budgetName: "",
   });
 
   const createBudget = async () => {
     toast
       .promise(
         axios.post(`/dashboard/addBudget`, {
-          email: userData.email,
+          id: userData.email,
           newBudget,
         }),
         {
@@ -24,7 +24,7 @@ const AddBudget = ({ userData, fetchBudgetNames }) => {
         }
       )
       .then(() => {
-        fetchBudgetNames();
+        fetchUser();
       });
   };
 
@@ -55,14 +55,14 @@ const AddBudget = ({ userData, fetchBudgetNames }) => {
       />
       <TextField
         id="outlined-basic"
-        label="Description"
+        label="Budget Name"
         variant="outlined"
         size="small"
         margin="normal"
         type="text"
-        value={newBudget.description}
+        value={newBudget.budgetName}
         onChange={(e) => {
-          setBudget({ ...newBudget, description: e.target.value });
+          setBudget({ ...newBudget, budgetName: e.target.value });
         }}
       />
       <Box
@@ -88,7 +88,7 @@ const AddBudget = ({ userData, fetchBudgetNames }) => {
             setBudget({
               date: "",
               fundAlloted: 0,
-              description: "",
+              budgetName: "",
             });
           }}
         >

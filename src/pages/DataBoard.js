@@ -10,6 +10,8 @@ import {
   MenuItem,
   InputLabel,
   IconButton,
+  Button,
+  List,
 } from "@mui/material";
 import {
   MonetizationOn,
@@ -46,25 +48,40 @@ const CardContentTheme = {
 };
 
 const DataBoard = ({ userData, budgetNames }) => {
-  var spent = 0;
-  const [fetchedBudget, setFetch] = useState([]);
-  const [dataBoardValues, setDataBoardValues] = useState({
-    allotedAmount: 0,
-    spentAmount: 0,
-    balanceAmount: 0,
-  });
+  const [expenses, setExpenses] = useState([]);
+  const [dataBoardValues, setDataBoardValues] = useState({});
+  const [currentBudget, setCurrentBudget] = useState("");
+
+  // const handleChange = async (budget) => {
+  //   setCurrentBudget(budget);
+  //   await toast.promise(
+  //     axios
+  //       .post("/dashboard/dataBoard", { userid: userData.email, budget })
+  //       .then((res) => {
+  //         setFetch(res.data[0].budgets);
+  //         setDataBoardValues({
+  //           allotedAmount: res.data[0].fundAlloted,
+  //           spentAmount: calculateSpent(res.data[0].budgets),
+  //           balanceAmount: calculateBalance(res.data[0].fundAlloted),
+  //         });
+  //       }),
+  //     {
+  //       loading: "Fetching...",
+  //       success: <b>Fetched!</b>,
+  //       error: <b>Could not fetch!</b>,
+  //     }
+  //   );
+  // };
 
   const handleChange = async (budget) => {
-    toast.promise(
+    setCurrentBudget(budget);
+    await toast.promise(
       axios
-        .post("/dashboard/dataBoard", { email: userData.email, budget })
+        .post("/dashboard/dataBoard", { userid: userData.email, budget })
         .then((res) => {
-          setFetch(res.data[0].budgets);
-          setDataBoardValues({
-            allotedAmount: res.data[0].fundAlloted,
-            spentAmount: calculateSpent(res.data[0].budgets),
-            balanceAmount: calculateBalance(res.data[0].fundAlloted),
-          });
+          console.log(res);
+          setExpenses(res.data.expenseList);
+          setDataBoardValues(res.data.moneyValues);
         }),
       {
         loading: "Fetching...",
@@ -74,18 +91,23 @@ const DataBoard = ({ userData, budgetNames }) => {
     );
   };
 
-  const calculateBalance = (val) => {
-    return val - spent;
+  const deleteItem = async (itemId, currentBudget) => {
+    toast.promise(
+      axios
+        .post(`/dashboard/dataBoard/deleteItem/${itemId}`, {
+          userid: userData.email,
+          currentBudget,
+        })
+        .then(() => {
+          handleChange(currentBudget);
+        }),
+      {
+        loading: "Deleting...",
+        success: <b>Deleted!</b>,
+        error: <b>Could not delete!</b>,
+      }
+    );
   };
-
-  const calculateSpent = (budgets) => {
-    budgets.map((val) => {
-      spent += val.amount;
-    });
-    return spent;
-  };
-
-  console.log(dataBoardValues);
 
   return (
     <Box
@@ -123,6 +145,7 @@ const DataBoard = ({ userData, budgetNames }) => {
                 Fund Alloted
               </Typography>
               <Typography variant="h6" component="h6" color="white">
+                ₹{" "}
                 <CountUp
                   start={0}
                   end={dataBoardValues.allotedAmount}
@@ -143,6 +166,7 @@ const DataBoard = ({ userData, budgetNames }) => {
                 Spend
               </Typography>
               <Typography variant="h6" component="h6" color="white">
+                ₹{" "}
                 <CountUp
                   start={0}
                   end={dataBoardValues.spentAmount}
@@ -163,6 +187,7 @@ const DataBoard = ({ userData, budgetNames }) => {
                 Balance
               </Typography>
               <Typography variant="h6" component="h6" color="white">
+                ₹{" "}
                 <CountUp
                   start={0}
                   end={dataBoardValues.balanceAmount}
@@ -188,9 +213,10 @@ const DataBoard = ({ userData, budgetNames }) => {
           overflow: "scroll",
         }}
       >
-        {fetchedBudget
-          ? fetchedBudget.map((val) => (
-              <Card
+        {expenses
+          ? expenses.map((val) => (
+              <List
+                key={val._id}
                 sx={{
                   width: "50%",
                   height: "50px",
@@ -202,13 +228,17 @@ const DataBoard = ({ userData, budgetNames }) => {
                     "0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)",
                 }}
               >
-                <Typography>{val.bgDate}</Typography>
+                <Typography>{val.expenseDate}</Typography>
                 <Typography>{val.spentOn}</Typography>
-                <Typography>{val.amount}</Typography>
-                <IconButton>
-                  <HighlightOff color="red" />
-                </IconButton>
-              </Card>
+                <Typography>₹ {val.amount}</Typography>
+                <Button
+                  onClick={() => {
+                    deleteItem(val._id, currentBudget);
+                  }}
+                >
+                  <HighlightOff />
+                </Button>
+              </List>
             ))
           : null}
       </Box>
