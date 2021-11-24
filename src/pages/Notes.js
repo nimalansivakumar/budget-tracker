@@ -27,6 +27,10 @@ const ModalStyle = {
   boxShadow: 24,
   borderRadius: "5px",
   p: 4,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
 };
 
 const Notes = ({ userData }) => {
@@ -38,20 +42,23 @@ const Notes = ({ userData }) => {
   const [open, setOpen] = useState(false);
   const [noteModal, setNoteModal] = useState({
     open: false,
-    value: "",
+    val: "",
+    noteID: "",
   });
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleModalOpen = (key) => {
+  const handleModalOpen = (text, id) => {
     setNoteModal({
       open: true,
-      val: key,
+      val: text,
+      noteID: id,
     });
   };
-  const handleModalClose = (key) => {
+  const handleModalClose = (text) => {
     setNoteModal({
       open: false,
       val: "",
+      noteID: "",
     });
   };
 
@@ -68,14 +75,46 @@ const Notes = ({ userData }) => {
   };
 
   const handleClick = async () => {
-    await toast.promise(
-      axios.post("/dashboard/notes/addNote", { userid: userData.email, note }),
-      {
-        loading: "Adding Note",
-        success: <b>Successfully Added!</b>,
-        error: <b>Could not add, try again.</b>,
-      }
-    );
+    await toast
+      .promise(
+        axios.post("/dashboard/notes/addNote", {
+          userid: userData.email,
+          note,
+        }),
+        {
+          loading: "Adding Note",
+          success: <b>Successfully Added!</b>,
+          error: <b>Could not add, try again.</b>,
+        }
+      )
+      .then(() => {
+        fetchNotes();
+        setOpen(false);
+      });
+  };
+
+  const handleNoteOpen = (key) => {
+    var text = fetchedNotes[key];
+    handleModalOpen(text.summary, text._id);
+  };
+
+  const deleteNote = async () => {
+    await toast
+      .promise(
+        axios.post("/dashboard/notes/deleteNote", {
+          userid: userData.email,
+          noteID: noteModal.noteID,
+        }),
+        {
+          loading: "Deleting Note",
+          success: <b>Successfully Deleted!</b>,
+          error: <b>Could not delete, try again.</b>,
+        }
+      )
+      .then(() => {
+        fetchNotes();
+        handleModalClose();
+      });
   };
 
   return (
@@ -105,18 +144,19 @@ const Notes = ({ userData }) => {
         </Box>
         <Modal open={open} onClose={handleClose}>
           <Box sx={ModalStyle}>
-            <FormGroup>
+            <FormGroup sx={{ width: "100%", height: "100%" }}>
               <TextField
-                margin="normal"
                 type="text"
                 variant="outlined"
                 label="Title"
                 name="title"
+                margin="normal"
                 onChange={(e) => {
                   setNote({ ...note, title: e.target.value });
                 }}
               />
               <TextField
+                margin="normal"
                 type="text"
                 label="Summary"
                 multiline
@@ -142,7 +182,21 @@ const Notes = ({ userData }) => {
           </Box>
         </Modal>
       </Box>
-
+      <Modal open={noteModal.open} onClose={handleModalClose}>
+        <Box sx={ModalStyle}>
+          <Typography>{noteModal.val}</Typography>
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ margin: "20px" }}
+            onClick={() => {
+              deleteNote(noteModal);
+            }}
+          >
+            Delete
+          </Button>
+        </Box>
+      </Modal>
       <Box
         sx={{
           width: "100%",
@@ -170,7 +224,7 @@ const Notes = ({ userData }) => {
                 }}
                 key={key}
                 onClick={() => {
-                  handleModalOpen(key);
+                  handleNoteOpen(key);
                 }}
               >
                 <CardContent>
@@ -181,15 +235,6 @@ const Notes = ({ userData }) => {
               </Card>
             ))
           : null}
-
-        {/* <Modal open={noteModal.open} onClose={handleModalClose}>
-          <Box sx={ModalStyle}>
-            <Typography>HI</Typography>
-          </Box>
-          <IconButton sx={{ display: "flex", alignItems: "flex-end" }}>
-            <Delete></Delete>
-          </IconButton>
-        </Modal> */}
       </Box>
     </Box>
   );
