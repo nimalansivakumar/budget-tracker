@@ -23,6 +23,8 @@ import AddNotes from "./Notes";
 import DataEntry from "./DataEntry";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import axios from "axios";
+import Profile from "./Profile";
+import Download from "../components/export";
 
 const Dashboard = ({ userid }) => {
   const [userData, setUserData] = useState({});
@@ -46,7 +48,7 @@ const Dashboard = ({ userid }) => {
         <div>
           <Box sx={{ display: "flex", width: "100%" }}>
             <Box
-              sx={{ width: "20%", height: " 90vh", backgroundColor: "#fff" }}
+              sx={{ width: "20%", height: " 91vh", backgroundColor: "#fff" }}
             >
               <nav className="w-full">
                 <List>
@@ -57,10 +59,12 @@ const Dashboard = ({ userid }) => {
                       justifyContent: "center",
                     }}
                   >
-                    <Avatar
-                      src={userData.picture}
-                      sx={{ width: "100px", height: "100px" }}
-                    ></Avatar>
+                    <Link to="/dashboard/Profile">
+                      <Avatar
+                        src={userData.picture}
+                        sx={{ width: "100px", height: "100px" }}
+                      ></Avatar>
+                    </Link>
                     <Typography
                       variant="h5"
                       component="h5"
@@ -125,7 +129,7 @@ const Dashboard = ({ userid }) => {
             <Box
               sx={{
                 width: "80%",
-                height: "90vh",
+                height: "91vh",
                 display: "flex",
                 flexDirection: "column",
                 justify: "center",
@@ -133,6 +137,11 @@ const Dashboard = ({ userid }) => {
               }}
             >
               <Switch>
+                <Route
+                  exact
+                  path="/dashboard/Profile"
+                  component={() => <Profile userData={userData} />}
+                />
                 <Route
                   exact
                   path="/dashboard/AddBudget"
@@ -161,7 +170,9 @@ const Dashboard = ({ userid }) => {
                 <Route
                   exact
                   path="/dashboard/DataGraph"
-                  component={() => <DataGraph />}
+                  component={() => (
+                    <DataGraph userData={userData} budgetNames={budgetNames} />
+                  )}
                 />
                 <Route
                   exact

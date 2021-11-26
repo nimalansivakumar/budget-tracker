@@ -45,6 +45,7 @@ const DataEntry = ({ userData, budgetNames }) => {
         sx={{
           width: "30%",
           height: "100%",
+          display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
@@ -67,6 +68,7 @@ const DataEntry = ({ userData, budgetNames }) => {
           </Select>
         </FormControl>
         <TextField
+          fullWidth
           id="outlined-basic"
           variant="outlined"
           size="small"
@@ -78,6 +80,7 @@ const DataEntry = ({ userData, budgetNames }) => {
           }}
         />
         <TextField
+          fullWidth
           id="outlined-basic"
           label="Amount"
           variant="outlined"
@@ -90,6 +93,7 @@ const DataEntry = ({ userData, budgetNames }) => {
           }}
         />
         <TextField
+          fullWidth
           id="outlined-basic"
           label="Spent On"
           variant="outlined"

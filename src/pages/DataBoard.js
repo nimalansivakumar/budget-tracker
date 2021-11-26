@@ -12,6 +12,13 @@ import {
   IconButton,
   Button,
   List,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import {
   MonetizationOn,
@@ -22,6 +29,7 @@ import {
 import CountUp from "react-countup";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { CSVLink } from "react-csv";
 
 const BoxTheme = {
   width: "100%",
@@ -52,34 +60,12 @@ const DataBoard = ({ userData, budgetNames }) => {
   const [dataBoardValues, setDataBoardValues] = useState({});
   const [currentBudget, setCurrentBudget] = useState("");
 
-  // const handleChange = async (budget) => {
-  //   setCurrentBudget(budget);
-  //   await toast.promise(
-  //     axios
-  //       .post("/dashboard/dataBoard", { userid: userData.email, budget })
-  //       .then((res) => {
-  //         setFetch(res.data[0].budgets);
-  //         setDataBoardValues({
-  //           allotedAmount: res.data[0].fundAlloted,
-  //           spentAmount: calculateSpent(res.data[0].budgets),
-  //           balanceAmount: calculateBalance(res.data[0].fundAlloted),
-  //         });
-  //       }),
-  //     {
-  //       loading: "Fetching...",
-  //       success: <b>Fetched!</b>,
-  //       error: <b>Could not fetch!</b>,
-  //     }
-  //   );
-  // };
-
   const handleChange = async (budget) => {
     setCurrentBudget(budget);
     await toast.promise(
       axios
         .post("/dashboard/dataBoard", { userid: userData.email, budget })
         .then((res) => {
-          console.log(res);
           setExpenses(res.data.expenseList);
           setDataBoardValues(res.data.moneyValues);
         }),
@@ -107,6 +93,24 @@ const DataBoard = ({ userData, budgetNames }) => {
         error: <b>Could not delete!</b>,
       }
     );
+  };
+
+  const headers = [
+    { label: "Date", key: "expenseDate" },
+    {
+      label: "Expense",
+      key: "spentOn",
+    },
+    {
+      label: "Amount",
+      key: "amount",
+    },
+  ];
+
+  const csvReport = {
+    filename: "Report.csv",
+    headers: headers,
+    data: expenses,
   };
 
   return (
@@ -213,7 +217,77 @@ const DataBoard = ({ userData, budgetNames }) => {
           overflow: "scroll",
         }}
       >
-        {expenses
+        <TableContainer
+          component={Paper}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Table sx={{ minWidth: 500 }}>
+            <TableHead>
+              <TableRow sx={{ fontWeight: "bolder" }}>
+                <TableCell align="left">Date</TableCell>
+                <TableCell align="left">Expense</TableCell>
+                <TableCell align="left">Amount</TableCell>
+                <TableCell align="left">Delete Item</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {expenses.map((data) => (
+                <TableRow
+                  key={data._id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="left">{data.expenseDate}</TableCell>
+                  <TableCell align="left">{data.spentOn}</TableCell>
+                  <TableCell align="left">
+                    ₹{" "}
+                    <CountUp
+                      start={0}
+                      end={data.amount}
+                      duration={1}
+                      separator=","
+                    ></CountUp>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        deleteItem(data._id, currentBudget);
+                      }}
+                    >
+                      <HighlightOff />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Button
+            variant="contained"
+            sx={{
+              width: "30%",
+              margin: "20px",
+              backgroundColor: "#71EFA3",
+              ":hover": {
+                backgroundColor: "#34BE82",
+              },
+            }}
+          >
+            <CSVLink {...csvReport}>Export</CSVLink>
+          </Button>
+        </TableContainer>
+      </Box>
+    </Box>
+  );
+};
+
+export default DataBoard;
+
+{
+  /* {expenses
           ? expenses.map((val) => (
               <List
                 key={val._id}
@@ -240,10 +314,5 @@ const DataBoard = ({ userData, budgetNames }) => {
                 </Button>
               </List>
             ))
-          : null}
-      </Box>
-    </Box>
-  );
-};
-
-export default DataBoard;
+          : null} */
+}

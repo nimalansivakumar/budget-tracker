@@ -11,24 +11,16 @@ import {
   Input,
   IconButton,
 } from "@mui/material";
-import { ArrowRight, PhotoCamera } from "@mui/icons-material";
+import signinImage from "../assets/images/signin.svg";
+import { ArrowRight, PhotoCamera, AccountCircle } from "@mui/icons-material";
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import fire from "../components/firebase";
 import { Redirect } from "react-router";
 
-const BoxStyle = {
-  width: "100%",
-  height: "100%",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "space-around",
-};
-
 const SignIn = ({ signedIn, hasSignedIn }) => {
-  const [hasAccount, setHasAccount] = useState(false);
+  const [hasAccount, setHasAccount] = useState(true);
   const [profile, setProfile] = useState(false);
   const [url, setUrl] = useState("");
   const [user, setuser] = useState({
@@ -64,22 +56,31 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
   };
 
   const handleSignUp = async () => {
-    toast.promise(
-      fire
-        .auth()
-        .createUserWithEmailAndPassword(user.email, user.password)
-        .then((userCredential) => {
-          saveToDB();
-        })
-        .catch((err) => {
-          console.log(err);
-        }),
-      {
-        loading: "Creating Account...",
-        success: <b>Successfully SignedUp!</b>,
-        error: <b>Could not Sign Up.</b>,
-      }
-    );
+    if (
+      user.email === "" &&
+      user.firstname === "" &&
+      user.lastname === "" &&
+      user.password === ""
+    ) {
+      toast.error("Fill the form!");
+    } else {
+      toast.promise(
+        fire
+          .auth()
+          .createUserWithEmailAndPassword(user.email, user.password)
+          .then((userCredential) => {
+            saveToDB();
+          })
+          .catch((err) => {
+            console.log(err);
+          }),
+        {
+          loading: "Creating Account...",
+          success: <b>Successfully SignedUp!</b>,
+          error: <b>Could not Sign Up.</b>,
+        }
+      );
+    }
   };
 
   const saveToDB = async () => {
@@ -101,7 +102,7 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
       }
     );
   };
-  
+
   fire.auth().onAuthStateChanged((currentUser) => {
     if (currentUser) {
       hasSignedIn({
@@ -122,33 +123,43 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
         alignItems: "center",
       }}
     >
-      <Box>
+      <Box
+        sx={{
+          height: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-evenly",
+          alignItems: "center",
+        }}
+      >
         <Typography
-          variant="h5"
-          component="h5"
-          sx={{ fontWeight: "bolder", color: "#fff" }}
+          variant="h3"
+          component="h3"
+          sx={{ fontWeight: "bold", color: "#eeefff" }}
         >
-          Customize your profile for better experiencing the app.
+          Create your profile for <br></br>better experiencing the app.
         </Typography>
+        <img className="w-1/2" src={signinImage} />
       </Box>
-      <Card sx={{ width: "30%", height: "90%" }}>
+      <Card sx={{ width: "30%", height: "auto" }}>
         <FormGroup
           sx={{
             width: "100%",
-            height: "100%",
+            height: "auto",
           }}
         >
           {hasAccount ? (
             <Box
               sx={{
                 width: "100%",
-                height: "60%",
+                height: "500px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "space-around",
               }}
             >
+              <AccountCircle fontSize="large" color="primary" />
               <TextField
                 type="email"
                 variant="outlined"
@@ -189,13 +200,31 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
                   </Button>
                 )}
               </Box>
-              <Typography variant="h6" component="h6" sx={{ fontSize: "15px" }}>
+              <Typography
+                variant="h6"
+                component="h6"
+                sx={{ fontSize: "15px", textAlign: "center" }}
+              >
                 Don't have an Account?
-                <p onClick={() => setHasAccount(false)}>Sign Up</p>
+                <Typography
+                  sx={{ cursor: "pointer", fontWeight: "bold" }}
+                  onClick={() => setHasAccount(false)}
+                >
+                  Sign Up
+                </Typography>
               </Typography>
             </Box>
           ) : (
-            <Box sx={BoxStyle}>
+            <Box
+              sx={{
+                width: "100%",
+                height: "600px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-around",
+              }}
+            >
               <Box
                 sx={{
                   width: "100px",
@@ -309,9 +338,18 @@ const SignIn = ({ signedIn, hasSignedIn }) => {
                   </Button>
                 )}
               </Box>
-              <Typography variant="h6" component="h6" sx={{ fontSize: "15px" }}>
+              <Typography
+                variant="h6"
+                component="h6"
+                sx={{ fontSize: "15px", textAlign: "center" }}
+              >
                 Have an Account?
-                <p onClick={() => setHasAccount(true)}>Log In</p>
+                <Typography
+                  sx={{ cursor: "pointer", fontWeight: "bold" }}
+                  onClick={() => setHasAccount(true)}
+                >
+                  Log In
+                </Typography>
               </Typography>
             </Box>
           )}
